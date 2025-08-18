@@ -1,0 +1,22 @@
+const express = require("express");
+const authRouter = require("./auth.route");
+const favoriteRouter = require("./favorite.route");
+const reviewRouter = require("./review.route");
+const categoryRouter = require("./category.route");
+const recipeRouter = require("./recipe.route");
+const cakeRouter = require("./cake.route");
+const userRouter = require("./user.route");
+const adminRouter = require("./admin.route");
+const detectRouter = require("./detect.route");
+const router = express.Router();
+
+router.use("/auth", authRouter);
+router.use("/favorite", favoriteRouter);
+router.use("/review", reviewRouter);
+router.use("/category", categoryRouter);
+router.use("/recipe", recipeRouter);
+router.use("/cake", cakeRouter);
+router.use("/user", userRouter);
+router.use("/admin", adminRouter);
+router.use("/detect", detectRouter);
+module.exports = router;
