@@ -5,31 +5,23 @@ from app.utils.image_processing import load_image_from_bytes, validate_image
 from app.config.settings import settings
 
 class DetectionService:
-    """Service xử lý detection"""
-    
     def __init__(self):
         self.model = ModelLoader.get_model()
     
     async def detect_objects(self, image_bytes: bytes, model_name: str = None) -> Dict[str, Any]:
-        """Detect objects in image"""
         try:
-            # Load image
             image = load_image_from_bytes(image_bytes)
-            
-            # Validate image
             if not validate_image(image):
                 raise ValueError("Invalid image format")
             
-            # Get model (allow switching models)
+            # load model (possible to switch)
             if model_name and model_name != settings.default_model:
                 model = ModelLoader.get_model(model_name)
             else:
                 model = self.model
-            
-            # Run detection
+
             detections = model.detect(image)
             
-            # Add class names to results
             results = []
             for detection in detections:
                 class_id = detection["class_id"]

@@ -1,9 +1,7 @@
-// services/recipe.service.js
 const Recipe = require("../models/Recipe");
 const Cake = require("../models/Cake");
 
 async function create(data) {
-  // data: { title, cake, ingredients, instructions, nutritionCalories, ... }
   // đảm bảo cake tồn tại
   const cake = await Cake.findById(data.cake);
   if (!cake) throw new Error("Cake not found");
@@ -17,7 +15,6 @@ async function update(id, data) {
   const recipe = await Recipe.findById(id);
   if (!recipe) throw new Error("Recipe not found");
 
-  // cập nhật các trường cho phép
   const updatable = [
     "title",
     "ingredients",

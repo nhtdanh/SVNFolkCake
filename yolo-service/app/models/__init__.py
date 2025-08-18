@@ -1,9 +1,3 @@
-"""
-Models package
-
-Contains all YOLO model implementations.
-"""
-
 from .base_model import BaseDetectionModel
 from .yolo_model import YOLOv8Model
 

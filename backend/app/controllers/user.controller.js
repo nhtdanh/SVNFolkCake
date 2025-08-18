@@ -1,4 +1,3 @@
-// controllers/user.controller.js
 const userService = require("../services/user.service");
 const ApiError = require("../api-error");
 

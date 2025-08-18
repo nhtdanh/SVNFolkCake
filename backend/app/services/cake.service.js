@@ -1,4 +1,3 @@
-// services/cake.service.js
 const Cake = require("../models/Cake");
 const path = require("path");
 

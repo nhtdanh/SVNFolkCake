@@ -5,7 +5,6 @@ from typing import List, Dict, Any
 from .base_model import BaseDetectionModel
 
 class YOLOv8Model(BaseDetectionModel):
-    """YOLO v8 ONNX Model Implementation"""
     
     def __init__(self, model_path: str, input_size: int = 416, num_classes: int = 16, 
                  confidence_threshold: float = 0.5, nms_threshold: float = 0.4):
@@ -15,7 +14,6 @@ class YOLOv8Model(BaseDetectionModel):
         self.load_model()
     
     def load_model(self):
-        """Load ONNX model"""
         try:
             self.model = ort.InferenceSession(self.model_path)
             self.input_name = self.model.get_inputs()[0].name
@@ -25,48 +23,36 @@ class YOLOv8Model(BaseDetectionModel):
             raise Exception(f"Failed to load model: {str(e)}")
     
     def preprocess(self, image: np.ndarray) -> np.ndarray:
-        """Preprocess image for YOLO"""
-        # Resize image
+        # Resize
         resized = cv2.resize(image, (self.input_size, self.input_size))
-        
-        # Convert BGR to RGB
+        # BGR to RGB
         rgb_image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
-        
-        # Normalize to [0, 1]
+        # Normalize
         normalized = rgb_image.astype(np.float32) / 255.0
-        
-        # Transpose to CHW format
+        # Transpose to CHW 
         transposed = np.transpose(normalized, (2, 0, 1))
-        
-        # Add batch dimension
+        # Add batch 
         batch_input = np.expand_dims(transposed, axis=0)
-        
         return batch_input
     
     def predict(self, input_data: np.ndarray) -> np.ndarray:
-        """Run inference"""
         try:
             outputs = self.model.run(self.output_names, {self.input_name: input_data})
-            return outputs[0]  # Lấy output đầu tiên
+            return outputs[0] 
         except Exception as e:
             raise Exception(f"Prediction failed: {str(e)}")
     
     def postprocess(self, predictions: np.ndarray, original_shape: tuple) -> List[Dict[str, Any]]:
-        """Post-process YOLO predictions"""
         results = []
-        
-        # Get original dimensions
         orig_height, orig_width = original_shape
-        
-        # Scale factors
+        # Scale
         scale_x = orig_width / self.input_size
         scale_y = orig_height / self.input_size
-        
-        # Parse predictions (YOLOv8 format: [batch, 4+classes, num_detections])
+        # YOLOv8 format: [batch, 4+classes, num_detections])
         if len(predictions.shape) == 3:
-            predictions = predictions[0]  # Remove batch dimension
-        
-        # Transpose if needed: [num_detections, 4+classes]
+            predictions = predictions[0]  
+
+        # Transpose: [num_detections, 4+classes]
         if predictions.shape[0] < predictions.shape[1]:
             predictions = predictions.T
         
@@ -78,19 +64,18 @@ class YOLOv8Model(BaseDetectionModel):
             # YOLOv8 format: [x_center, y_center, width, height, class_scores...]
             x_center, y_center, width, height = detection[:4]
             class_scores = detection[4:4+self.num_classes]
-            
-            # Get best class
+            # Best class
             class_id = np.argmax(class_scores)
             confidence = class_scores[class_id]
             
             if confidence >= self.confidence_threshold:
-                # Convert to corner coordinates
+
                 x1 = x_center - width / 2
                 y1 = y_center - height / 2
                 x2 = x_center + width / 2
                 y2 = y_center + height / 2
                 
-                # Scale to original image size
+                # Original size
                 x1 = int(x1 * scale_x)
                 y1 = int(y1 * scale_y)
                 x2 = int(x2 * scale_x)
@@ -100,7 +85,7 @@ class YOLOv8Model(BaseDetectionModel):
                 scores.append(float(confidence))
                 class_ids.append(int(class_id))
         
-        # Apply NMS
+        # Apply Non-Max-Supression
         if len(boxes) > 0:
             boxes = np.array(boxes)
             scores = np.array(scores)

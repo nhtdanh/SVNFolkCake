@@ -1,4 +1,3 @@
-// controllers/cake.controller.js
 const cakeService = require("../services/cake.service");
 const ApiError = require("../api-error");
 const path = require("path");
