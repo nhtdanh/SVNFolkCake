@@ -3,6 +3,7 @@ const ApiError = require("../api-error");
 
 async function create(req, res, next) {
   try {
+    // console.log(req.body)
     const { cakeId, rating, comment } = req.body;
     if (!cakeId || !rating) {
       return next(new ApiError(400, "cakeId and rating are required"));

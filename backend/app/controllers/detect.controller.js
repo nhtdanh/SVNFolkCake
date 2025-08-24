@@ -7,10 +7,13 @@ async function detect(req, res, next) {
 
   const filePath = req.file.path;
   const model = req.body.model || req.query.model;
-
+  const confidence = req.body.confidence || req.query.confidence;
+  const nms_threshold = req.body.nms_threshold || req.query.nms_threshold;
   try {
     const result = await detectService.detectFromFile(filePath, {
       model,
+      confidence,
+      nms_threshold,
     });
     return res.json(result);
   } catch (err) {

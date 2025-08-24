@@ -3,22 +3,35 @@ const Cake = require("../models/Cake");
 const mongoose = require("mongoose");
 
 async function recalcRating(cakeId) {
+  // đảm bảo cakeId là ObjectId
+  const objId = new mongoose.Types.ObjectId(cakeId);
+
   const res = await Review.aggregate([
-    { $match: { cake: mongoose.Types.ObjectId(cakeId) } },
-    { $group: { _id: "$cake", avg: { $avg: "$rating" }, count: { $sum: 1 } } },
+    { $match: { cake: objId } },
+    {
+      $group: {
+        _id: "$cake",
+        average: { $avg: "$rating" },
+        count: { $sum: 1 },
+      },
+    },
   ]);
 
   if (res.length > 0) {
-    const { avg, count } = res[0];
-    await Cake.findByIdAndUpdate(cakeId, {
-      "rating.average": Number(avg.toFixed(2)),
-      "rating.count": count,
-    });
+    const { average, count } = res[0];
+    // round to 2 decimals
+    const avgRounded = Number(Number(average).toFixed(2));
+    await Cake.findByIdAndUpdate(
+      cakeId,
+      { "rating.average": avgRounded, "rating.count": count },
+      { new: true }
+    );
   } else {
-    await Cake.findByIdAndUpdate(cakeId, {
-      "rating.average": 0,
-      "rating.count": 0,
-    });
+    await Cake.findByIdAndUpdate(
+      cakeId,
+      { "rating.average": 0, "rating.count": 0 },
+      { new: true }
+    );
   }
 }
 
@@ -50,7 +63,7 @@ async function remove(reviewId) {
 }
 
 async function listByCake(cakeId) {
-  return Review.find({ cake: cakeId }).populate("user", "fullName username");
+  return Review.find({ cake: cakeId }).populate("user", "username");
 }
 
 async function listByUser(userId) {

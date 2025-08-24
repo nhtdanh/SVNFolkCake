@@ -4,12 +4,12 @@ const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
 
-const DETECT_URL = process.env.DETECT_URL || "http://localhost:8001/detect";
-const MODELS_URL = process.env.MODELS_URL || "http://localhost:8001/models";
+const DETECT_URL = process.env.DETECT_URL || "http://localhost:8000/detect";
+const MODELS_URL = process.env.MODELS_URL || "http://localhost:8000/models";
 const TIMEOUT = parseInt(process.env.DETECT_TIMEOUT || "60000", 10);
 
 async function detectFromFile(filePath, options = {}) {
-  const { model = null } = options;
+  const { model = null, confidence = null, nms_threshold = null } = options;
   const form = new FormData();
   form.append("file", fs.createReadStream(filePath));
   let url = DETECT_URL;
@@ -17,26 +17,36 @@ async function detectFromFile(filePath, options = {}) {
   if (model !== null && model !== undefined && model !== "") {
     params.append("model", model);
   }
+  if (confidence !== null && confidence !== undefined && confidence !== "") {
+    params.append("confidence", confidence);
+  }
+  if (
+    nms_threshold !== null &&
+    nms_threshold !== undefined &&
+    nms_threshold !== ""
+  ) {
+    params.append("nms_threshold", nms_threshold);
+  }
   if (params.toString()) {
     url = `${url}?${params.toString()}`;
   }
   const headers = form.getHeaders();
   try {
-    console.log(`Calling YOLO service: ${url}`);
-    if (model) console.log(`Using model: ${model}`);
+    // console.log(`Calling YOLO service: ${url}`);
+    // if (model) console.log(`Using model: ${model}`);
     const res = await axios.post(url, form, {
       headers,
       timeout: TIMEOUT,
     });
     const data = res.data;
-    if (data.success && data.detections) {
-      console.log(
-        `Detection completed: ${data.total_detections} objects found`
-      );
-      if (data.model_used) {
-        console.log(`Model used: ${data.model_used}`);
-      }
-    }
+    // if (data.success && data.detections) {
+    //   console.log(
+    //     `Detection completed: ${data.total_detections} objects found`
+    //   );
+    //   if (data.model_used) {
+    //     console.log(`Model used: ${data.model_used}`);
+    //   }
+    // }
 
     return data;
   } catch (err) {

@@ -48,22 +48,27 @@ async def get_available_models():
 async def detect_objects(
     file: UploadFile = File(...),
     model: Optional[str] = Query(None, description="Model name to use"),
-    confidence: Optional[float] = Query(None, ge=0.1, le=1.0, description="Confidence threshold")
+    confidence: Optional[float] = Query(None, ge=0.1, le=1.0, description="Confidence threshold"),
+    nms_threshold: Optional[float] = Query(None, ge=0.1, le=1.0, description="NMS threshold")
 ):
-
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
     
     try:
         image_bytes = await file.read()
-        if confidence:
-            original_threshold = settings.confidence_threshold
-            settings.confidence_threshold = confidence
         
-        result = await detection_service.detect_objects(image_bytes, model)
+        config_overrides = {}
+        if confidence is not None:
+            config_overrides['confidence_threshold'] = confidence
+        if nms_threshold is not None:
+            config_overrides['nms_threshold'] = nms_threshold
         
-        if confidence:
-            settings.confidence_threshold = original_threshold
+        result = await detection_service.detect_objects(
+            image_bytes, 
+            model, 
+            config_overrides
+        )
+        
         return result
         
     except Exception as e:

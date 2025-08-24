@@ -30,7 +30,7 @@ async function login(username, password) {
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) throw new Error("Invalid username or password");
 
-  const payload = { id: user._id, role: user.vaiTro, username: user.username };
+  const payload = { id: user._id, role: user.role, username: user.username };
   const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });

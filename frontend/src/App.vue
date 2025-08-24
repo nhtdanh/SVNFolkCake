@@ -1,11 +1,23 @@
-<script setup></script>
+<script setup>
+import Toast from 'primevue/toast'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div class="app" id="app">
+    <div class="wrap__app">
+      <router-view />
+    </div>
+    <Toast position="top-right" group="tr" />
+    <Toast position="bottom-right" group="br" />
+  </div>
 </template>
-
-<style scoped></style>
+<style scoped>
+html,
+body,
+#app {
+  background-color: #FFFDF3;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+</style>

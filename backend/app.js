@@ -7,7 +7,12 @@ const ApiError = require("./app/api-error");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3001", 
+    credentials: true, 
+  })
+);
 app.use(express.json());
 
 const publicPathDirectory = path.join(__dirname, "public");
@@ -23,13 +28,11 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1", router);
 
-// Handle 404 response
 app.use((req, res, next) => {
   return next(new ApiError(404, "Resource not found"));
 });
 
 app.use((err, req, res, next) => {
-  // Xử lí lỗi đưa qua next(err)
   return res.status(err.statusCode || 500).json({
     code: err.statusCode || 500,
     msg: err.message || "Internal Server Error",

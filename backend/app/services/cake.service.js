@@ -11,8 +11,7 @@ async function list(filters = {}, pagination = {}) {
   if (q) {
     query.$or = [
       { name: new RegExp(q, "i") },
-      { shortDescription: new RegExp(q, "i") },
-      { detailedDescription: new RegExp(q, "i") },
+      // { description: new RegExp(q, "i") },
     ];
   }
   if (category) query.category = category;

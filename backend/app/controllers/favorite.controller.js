@@ -1,12 +1,14 @@
 const favoriteService = require("../services/favorite.service");
 const ApiError = require("../api-error");
 
-// POST /favorite
+// POST /favorite/:cakeId
 async function add(req, res, next) {
   try {
+    // console.log(req.user.id)
+    // console.log(req.params.cakeId)
     const result = await favoriteService.addFavorite(
       req.user.id,
-      req.body.cakeId
+      req.params.cakeId
     );
     res.json({ code: 0, msg: "Đã thêm vào yêu thích", data: result });
   } catch (err) {
@@ -17,7 +19,9 @@ async function add(req, res, next) {
 // GET /favorite
 async function list(req, res, next) {
   try {
+    // console.log("user id", req.user.id)
     const result = await favoriteService.getFavorites(req.user.id);
+    // console.log(result)
     res.json({ code: 0, msg: "OK", data: result });
   } catch (err) {
     next(new ApiError(500, err.message));

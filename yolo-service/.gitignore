@@ -36,10 +36,10 @@ env/
 *.swp
 *.swo
 
-# Model files (optional - nếu không muốn commit model files)
-models/*.onnx
-models/*.pt
-models/*.pth
+# Model files 
+# models/*.onnx
+# models/*.pt
+# models/*.pth
 
 # Logs
 *.log

@@ -6,19 +6,26 @@ const favoriteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    cake: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cake",
-      required: true,
-    },
+    cakes: [
+      {
+        cake: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Cake",
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-//1 user không thể favorite 1 cake nhiều lần
-favoriteSchema.index({ user: 1, cake: 1 }, { unique: true });
+// Đảm bảo mỗi cặp user-cake không trùng lặp trong mảng
+favoriteSchema.index(
+  { user: 1, "cakes.cake": 1 },
+  { unique: true, sparse: true }
+);
 
 const Favorite = mongoose.model("Favorite", favoriteSchema);
 module.exports = Favorite;
