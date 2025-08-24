@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 require("dotenv").config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const uri = process.env.MONGODB_URI;
 async function startServer() {
   try {
