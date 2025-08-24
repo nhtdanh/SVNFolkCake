@@ -7,12 +7,12 @@ const ApiError = require("./app/api-error");
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin: "http://localhost:3001", 
-    credentials: true, 
-  })
-);
+  app.use(
+    cors({
+      origin: "http://localhost:3001", 
+      credentials: true, 
+    })
+  );
 app.use(express.json());
 
 const publicPathDirectory = path.join(__dirname, "public");
