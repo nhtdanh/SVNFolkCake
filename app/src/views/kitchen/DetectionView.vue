@@ -295,7 +295,7 @@ async function detectCakes() {
 
   loading.value = true
   error.value = ''
-  analyzed.value = true
+
   try {
     const res = await DetectService.detectFile(detectStore.file, {
       model: detectStore.model,
@@ -305,7 +305,6 @@ async function detectCakes() {
 
     const dets = res?.detections || res?.data?.detections || res?.results || res?.predictions || []
     const detArray = Array.isArray(dets) ? dets : (typeof dets === 'object' ? Object.values(dets) : [])
-
     const img = new Image()
     img.onload = () => {
       const parsed = []
@@ -349,6 +348,7 @@ async function detectCakes() {
     })
   } finally {
     loading.value = false
+    analyzed.value = true
   }
 }
 

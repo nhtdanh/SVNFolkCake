@@ -28,7 +28,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps({
-    // Parent có thể truyền images; nếu không sẽ load từ src/assets/carousel
+
     images: { type: Array, default: null },
     autoPlay: { type: Boolean, default: true },
     interval: { type: Number, default: 4000 },
@@ -37,7 +37,7 @@ const props = defineProps({
     loop: { type: Boolean, default: true },
     altTexts: { type: Array, default: () => [] },
 
-    // NEW: ép component chỉ dùng 1 ảnh (không slider, không autoplay, không arrow/dot)
+
     forceSingle: { type: Boolean, default: false }
 })
 
@@ -46,9 +46,9 @@ const slides = ref([])
 const timer = ref(null)
 const viewport = ref(null)
 
-// Load ảnh (Vite import.meta.glob). Chạy ở onMounted để tránh SSR issues.
+
 function loadViteImages() {
-    // Nếu parent truyền images, dùng trực tiếp
+
     if (Array.isArray(props.images) && props.images.length) {
         slides.value = props.images.slice()
         if (props.forceSingle) slides.value = slides.value.slice(0, 1)
@@ -56,20 +56,19 @@ function loadViteImages() {
     }
 
     try {
-        // Cập nhật đường dẫn theo cấu trúc project nếu cần
+
         const modules = import.meta.glob('../../assets/carousel/*.{jpg,jpeg,png,webp}', { eager: true })
         const arr = Object.values(modules).map(m => m?.default || m).filter(Boolean)
         slides.value = arr
         if (props.forceSingle && slides.value.length) slides.value = [slides.value[0]]
     } catch (e) {
         slides.value = []
-        // Không throw, chỉ cảnh báo
-        // eslint-disable-next-line no-console
+
         console.warn('BannerHero: import.meta.glob failed', e)
     }
 }
 
-// Controls + autoplay
+
 function startAuto() {
     stopAuto()
     if (!props.autoPlay || props.forceSingle || slides.value.length <= 1) return
@@ -100,7 +99,7 @@ function goTo(i) {
 
 onMounted(() => {
     loadViteImages()
-    // đảm bảo active hợp lệ (trong trường hợp slides thay đổi)
+
     if (slides.value.length === 0) active.value = 0
     else if (active.value >= slides.value.length) active.value = 0
 
@@ -120,13 +119,13 @@ onUnmounted(() => {
     }
 })
 
-// Khi props thay đổi, restart auto nếu cần
+
 watch(
     () => [props.autoPlay, props.interval, slides.value.length, props.forceSingle],
     () => startAuto()
 )
 
-// Nếu chỉ 1 ảnh (do forceSingle hoặc truyền 1 ảnh), loại bỏ transition để không có "dịch chuyển"
+
 const trackStyle = computed(() => ({
     transform: `translateX(-${active.value * 100}%)`,
     transition: slides.value.length > 1 ? 'transform 420ms ease' : 'none'
@@ -147,6 +146,7 @@ const altTexts = props.altTexts
     display: block;
 }
 
+
 .banner-track {
     display: flex;
     align-items: center;
@@ -155,22 +155,31 @@ const altTexts = props.altTexts
 
 .banner-slide {
     flex: 0 0 100%;
-    display: flex;
+    display: block;
+    position: relative;
+    padding-top: 50%;
+    overflow: hidden;
     align-items: center;
     justify-content: center;
 }
 
+
 .banner-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 500px;
+    height: 100%;
     object-fit: cover;
-    transition: filter 0.3s ease;
+    display: block;
+    transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-/* Nếu không muốn hiệu ứng hover làm tối ảnh, đổi filter thành none */
+
 .banner-viewport:hover .banner-image {
     filter: none;
 }
+
 
 .arrow {
     position: absolute;
@@ -224,20 +233,20 @@ const altTexts = props.altTexts
     cursor: pointer;
 }
 
-/* Màu dot active */
+
 .dot.active {
     background: rgba(0, 0, 0, 0.7);
 }
 
 @media (max-width: 992px) {
-    .banner-image {
-        height: 320px;
+    .banner-slide {
+        padding-top: 50.00%;
     }
 }
 
 @media (max-width: 576px) {
-    .banner-image {
-        height: 300px;
+    .banner-slide {
+        padding-top: 75%;
     }
 
     .arrow {
