@@ -295,14 +295,14 @@ async function detectCakes() {
 
   loading.value = true
   error.value = ''
-  analyzed.value = false
+  // analyzed.value = false
   try {
     const res = await DetectService.detectFile(detectStore.file, {
       model: detectStore.model,
       confidence: detectStore.confidence,
       nms_threshold: detectStore.nms
     })
-
+    analyzed.value = false
     const dets = res?.detections || res?.data?.detections || res?.results || res?.predictions || []
     const detArray = Array.isArray(dets) ? dets : (typeof dets === 'object' ? Object.values(dets) : [])
     const img = new Image()
