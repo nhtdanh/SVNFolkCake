@@ -1,0 +1,75 @@
+[{
+  "_id": {
+    "$oid": "68ab1ae8145f62e0428edf85"
+  },
+  "name": "Bánh Hấp",
+  "description": "",
+  "image": "",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-08-24T14:00:08.544Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-24T14:00:08.544Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68ab1ae8145f62e0428edf86"
+  },
+  "name": "Bánh Chiên",
+  "description": "",
+  "image": "",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68ab1ae8145f62e0428edf87"
+  },
+  "name": "Bánh Nướng",
+  "description": "",
+  "image": "",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68ab1ae8145f62e0428edf88"
+  },
+  "name": "Bánh Luộc",
+  "description": "",
+  "image": "",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68ab1ae8145f62e0428edf89"
+  },
+  "name": "Bánh Sống",
+  "description": "",
+  "image": "",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-24T14:00:08.545Z"
+  }
+}]
