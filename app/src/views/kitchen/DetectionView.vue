@@ -152,7 +152,7 @@ const fileInput = ref(null)
 const loading = ref(false)
 const error = ref('')
 const uploadError = ref('')
-const models = ref([])
+// const models = ref([])
 const toast = useToast()
 const router = useRouter()
 const isDragOver = ref(false)
@@ -168,14 +168,14 @@ const hasResults = computed(() =>
 )
 
 onMounted(async () => {
-  try {
-    const res = await DetectService.listModels()
-    if (Array.isArray(res)) models.value = res
-    else if (res?.models) models.value = res.models
-    else models.value = []
-  } catch (e) {
-    console.warn('Could not load detect models', e)
-  }
+  // try {
+  //   const res = await DetectService.listModels()
+  //   if (Array.isArray(res)) models.value = res
+  //   else if (res?.models) models.value = res.models
+  //   else models.value = []
+  // } catch (e) {
+  //   console.warn('Could not load detect models', e)
+  // }
 
   detectStore.confidence = clampNumber(confidence.value, 0.1, 1)
   detectStore.nms = clampNumber(nms.value, 0.1, 1)
@@ -295,7 +295,7 @@ async function detectCakes() {
 
   loading.value = true
   error.value = ''
-
+  analyzed.value = false
   try {
     const res = await DetectService.detectFile(detectStore.file, {
       model: detectStore.model,
