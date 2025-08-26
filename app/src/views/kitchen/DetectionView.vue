@@ -280,6 +280,7 @@ function resetUpload() {
   error.value = ''
   uploadError.value = ''
   showAdvanced.value = false
+  analyzed.value = false
   confidence.value = Number(detectStore.confidence ?? 0.5)
   nms.value = Number(detectStore.nms ?? 0.4)
   if (fileInput.value) fileInput.value.value = ''
