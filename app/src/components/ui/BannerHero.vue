@@ -170,7 +170,8 @@ const altTexts = props.altTexts
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center center;
     display: block;
     transition: filter 0.3s ease, transform 0.3s ease;
 }
