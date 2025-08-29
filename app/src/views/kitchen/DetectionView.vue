@@ -160,7 +160,6 @@ onMounted(async () => {
   detectStore.nms = clampNumber(nms.value, 0.1, 1)
 
   if (detectStore.fileUrl) {
-    // Nếu có dữ liệu detections trong store, đặt analyzed thành true để hiển thị kết quả
     if (detectStore.detections && detectStore.detections.length > 0) {
       analyzed.value = true
     }
@@ -285,7 +284,7 @@ async function detectCakes() {
 
   loading.value = true
   error.value = ''
-  analyzed.value = false // Reset analyzed để ẩn kết quả cũ khi phân tích lại
+  analyzed.value = false
   try {
     const res = await DetectService.detectFile(detectStore.file, {
       model: detectStore.model,
@@ -328,12 +327,10 @@ async function detectCakes() {
 
   } catch (err) {
     console.error(err)
-    // Thêm trường hợp nếu status code là 500 thì hiển thị "Lỗi server"
     let errorMessage
     if (err?.response?.status === 500) {
       errorMessage = 'Lỗi server'
     } else {
-      // Giữ nguyên logic cũ nếu không phải 500
       errorMessage = err?.response?.data?.msg || err?.message || 'Có lỗi xảy ra khi nhận diện ảnh'
     }
     error.value = errorMessage
