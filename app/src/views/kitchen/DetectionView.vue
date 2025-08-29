@@ -160,6 +160,10 @@ onMounted(async () => {
   detectStore.nms = clampNumber(nms.value, 0.1, 1)
 
   if (detectStore.fileUrl) {
+    // Nếu có dữ liệu detections trong store, đặt analyzed thành true để hiển thị kết quả
+    if (detectStore.detections && detectStore.detections.length > 0) {
+      analyzed.value = true
+    }
     nextTick(() => {
       const img = new Image()
       img.onload = () => {
