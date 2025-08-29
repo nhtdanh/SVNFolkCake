@@ -32,14 +32,6 @@
           <div class="position-relative">
             <canvas ref="canvas" class="preview-canvas"
               style="display:block; width:100%; max-width:800px; height:auto;"></canvas>
-
-            <!-- <button class="btn-reset" @click="resetUpload" title="Chọn ảnh khác" aria-label="Chọn ảnh khác">
-              
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </button> -->
           </div>
         </div>
         <div class="advanced-options mt-3">
@@ -57,16 +49,14 @@
               <div class="col-md-4">
                 <label class="form-label small fw-semibold">Độ tin cậy (confidence)</label>
                 <input type="number" v-model.number="confidence" @input="onConfidenceInput" step="0.1" min="0.1" max="1"
-                  class="form-control form-control-sm"  placeholder="0.50"
-                  aria-label="Độ tin cậy từ 0.1 đến 1.00" />
+                  class="form-control form-control-sm" placeholder="0.50" aria-label="Độ tin cậy từ 0.1 đến 1.00" />
                 <small class="muted-small">Giá trị: 0.1 → 1.00</small>
               </div>
 
               <div class="col-md-4">
                 <label class="form-label small fw-semibold">NMS Threshold</label>
                 <input type="number" v-model.number="nms" @input="onNmsInput" step="0.1" min="0.1" max="1"
-                  class="form-control form-control-sm"  placeholder="0.40"
-                  aria-label="NMS threshold từ 0.1 đến 1.00" />
+                  class="form-control form-control-sm" placeholder="0.40" aria-label="NMS threshold từ 0.1 đến 1.00" />
                 <small class="muted-small">Giá trị: 0.1 → 1.00</small>
               </div>
             </div>
@@ -94,7 +84,7 @@
     </div>
     <div v-if="analyzed" class="results-section">
       <div v-if="hasResults">
-        <div class=" text-center mb-3">
+        <div class="text-center mb-3">
           <div class="results-header">
             <h3 class="mb-1" style="color: white;">Phát hiện {{ detectStore.detections.length }} bánh</h3>
           </div>
@@ -122,16 +112,15 @@
                     <div class="confidence-fill" :style="{ width: (detection.confidence * 100) + '%' }"></div>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
         </div>
       </div>
       <div v-else>
-        <div class=" text-center mb-3">
+        <div class="text-center mb-3">
           <div class="results-header">
-            <h3 class="mb-1" style="color: white"> Không phát hiện bánh nào</h3>
+            <h3 class="mb-1" style="color: white">Không phát hiện bánh nào</h3>
           </div>
         </div>
       </div>
@@ -152,7 +141,6 @@ const fileInput = ref(null)
 const loading = ref(false)
 const error = ref('')
 const uploadError = ref('')
-// const models = ref([])
 const toast = useToast()
 const router = useRouter()
 const isDragOver = ref(false)
@@ -168,15 +156,6 @@ const hasResults = computed(() =>
 )
 
 onMounted(async () => {
-  // try {
-  //   const res = await DetectService.listModels()
-  //   if (Array.isArray(res)) models.value = res
-  //   else if (res?.models) models.value = res.models
-  //   else models.value = []
-  // } catch (e) {
-  //   console.warn('Could not load detect models', e)
-  // }
-
   detectStore.confidence = clampNumber(confidence.value, 0.1, 1)
   detectStore.nms = clampNumber(nms.value, 0.1, 1)
 
@@ -267,6 +246,7 @@ function handleFile(file) {
   detectStore.setDetections([])
   error.value = ''
   uploadError.value = ''
+  analyzed.value = false
 
   nextTick(() => drawImageBlank())
 }
@@ -296,14 +276,13 @@ async function detectCakes() {
 
   loading.value = true
   error.value = ''
-  // analyzed.value = false
+  analyzed.value = false // Reset analyzed để ẩn kết quả cũ khi phân tích lại
   try {
     const res = await DetectService.detectFile(detectStore.file, {
       model: detectStore.model,
       confidence: detectStore.confidence,
       nms_threshold: detectStore.nms
     })
-    // analyzed.value = false
     const dets = res?.detections || res?.data?.detections || res?.results || res?.predictions || []
     const detArray = Array.isArray(dets) ? dets : (typeof dets === 'object' ? Object.values(dets) : [])
     const img = new Image()
@@ -353,7 +332,6 @@ async function detectCakes() {
   }
 }
 
-
 function parseBBox(item) {
   if (!item) return null
   const b = item.bbox
@@ -376,7 +354,6 @@ function parseBBox(item) {
   return null
 }
 
-
 function drawImageBlank(img = null) {
   const c = canvas.value
   if (!c) return
@@ -395,7 +372,6 @@ function drawImageBlank(img = null) {
   ctx.clearRect(0, 0, c.width, c.height)
   ctx.drawImage(img, 0, 0)
 }
-
 
 function drawImageWithBoxes(img, boxes) {
   const c = canvas.value
@@ -422,11 +398,9 @@ function drawImageWithBoxes(img, boxes) {
     const hue = (idx * 137.5) % 360
     const color = `hsl(${hue} 80% 45%)`
 
-
     ctx.strokeStyle = color
     ctx.globalAlpha = 1
     ctx.strokeRect(X1, Y1, w, h)
-
 
     const labelText = `${detection.label} ${(detection.confidence * 100).toFixed(0)}%`
     const fontSize = Math.max(12, Math.round(14 * (c.width / 800)))
@@ -437,11 +411,9 @@ function drawImageWithBoxes(img, boxes) {
     const textW = textMetrics.width + padding * 2
     const textH = fontSize + padding
 
-
     ctx.fillStyle = color
     ctx.globalAlpha = 0.9
     ctx.fillRect(X1, Math.max(0, Y1 - textH), textW, textH)
-
 
     ctx.fillStyle = '#ffffff'
     ctx.globalAlpha = 1
@@ -451,7 +423,6 @@ function drawImageWithBoxes(img, boxes) {
     ctx.textBaseline = 'alphabetic' // reset
   })
 }
-
 
 function searchLabel(label) {
   router.push({ name: 'search', query: { q: label } })
@@ -466,7 +437,6 @@ function searchLabel(label) {
   --card-border: #e6edf3;
 }
 
-
 .upload-section {
   max-width: 820px;
   margin: 0 auto;
@@ -474,10 +444,8 @@ function searchLabel(label) {
   position: relative;
 }
 
-
 .upload-section.centered {
   min-height: calc(100vh - 4rem);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -489,7 +457,6 @@ function searchLabel(label) {
   align-items: center;
   justify-content: center;
 }
-
 
 .upload-dropzone {
   width: 800px;
@@ -556,7 +523,6 @@ function searchLabel(label) {
   margin-top: 6px;
 }
 
-
 .image-preview-section {
   text-align: center;
   width: 100%;
@@ -595,7 +561,6 @@ function searchLabel(label) {
 .btn-reset:hover {
   filter: brightness(1.05);
 }
-
 
 .btn-plain {
   background: none;
@@ -639,7 +604,6 @@ function searchLabel(label) {
 .btn-lg {
   font-size: 0.95rem;
 }
-
 
 .results-section {
   max-width: 1000px;
@@ -688,7 +652,6 @@ function searchLabel(label) {
   margin-top: 2px;
 }
 
-
 .confidence-bar {
   width: 100%;
   height: 6px;
@@ -704,8 +667,27 @@ function searchLabel(label) {
   transition: width 0.35s ease;
 }
 
-input[type=" number"]::-webkit-outer-spin-button, input[type="number" ]::-webkit-inner-spin-button { background:
-              transparent; color: b; } input[type="number" ] { -moz-appearance: textfield; } @media (max-width: 768px) {
-              .upload-section.centered { min-height: calc(100vh - 3.5rem); } .upload-dropzone { min-height: 160px; }
-              .btn-lg { width: 100%; } } 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  background: transparent;
+  color: b;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 768px) {
+  .upload-section.centered {
+    min-height: calc(100vh - 3.5rem);
+  }
+
+  .upload-dropzone {
+    min-height: 160px;
+  }
+
+  .btn-lg {
+    width: 100%;
+  }
+}
 </style>
