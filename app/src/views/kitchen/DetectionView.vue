@@ -319,11 +319,13 @@ async function detectCakes() {
 
   } catch (err) {
     console.error(err)
-    error.value = err?.message || 'Có lỗi xảy ra khi nhận diện ảnh'
+    // Lấy msg từ response của server, nếu không có thì dùng message mặc định
+    const errorMessage = err?.response?.data?.msg || err?.message || 'Có lỗi xảy ra khi nhận diện ảnh'
+    error.value = errorMessage
     toast.add({
       severity: 'error',
       summary: 'Lỗi nhận diện',
-      detail: error.value,
+      detail: errorMessage,
       life: 5000
     })
   } finally {
