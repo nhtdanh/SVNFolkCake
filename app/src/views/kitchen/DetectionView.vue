@@ -18,13 +18,13 @@
             <h5 class="upload-title mb-1">Kéo thả ảnh hoặc</h5>
             <p class="upload-subtitle mb-2"><span class="text-accent fw-semibold">Nhấn để chọn file</span></p>
             <div class="upload-info">
-              <small class="muted-small">Hỗ trợ: JPG, PNG. Tối đa: 5MB</small>
+              <small class="muted-small">Hỗ trợ: JPG, JPEG, PNG. Tối đa: 5MB</small>
             </div>
             <div v-if="uploadError" class="upload-error mt-2">{{ uploadError }}</div>
           </div>
         </div>
 
-        <input ref="fileInput" type="file" @change="onFileSelect" accept="image/*" class="d-none" />
+        <input ref="fileInput" type="file" @change="onFileSelect" accept="image/jpeg,image/png" class="d-none" />
       </div>
 
       <div v-else class="image-preview-section" style="width:100%">
@@ -208,8 +208,13 @@ function clampNumber(v, min, max) {
 function validateFile(file) {
   if (!file) return 'Không có file được chọn'
 
+  const ext = file.name.toLowerCase().split('.').pop();
+  if (!['jpg', 'jpeg', 'png'].includes(ext)) {
+    return 'Vui lòng chọn file có đuôi JPG, JPEG hoặc PNG'
+  }
+
   if (!file.type.startsWith('image/')) {
-    return 'Vui lòng chọn file hình ảnh (JPG, PNG, WebP)'
+    return 'Vui lòng chọn file hình ảnh (JPG, JPEG, PNG)'
   }
 
   if (file.size > MAX_FILE_BYTES) {
@@ -323,8 +328,14 @@ async function detectCakes() {
 
   } catch (err) {
     console.error(err)
-    // Lấy msg từ response của server, nếu không có thì dùng message mặc định
-    const errorMessage = err?.response?.data?.msg || err?.message || 'Có lỗi xảy ra khi nhận diện ảnh'
+    // Thêm trường hợp nếu status code là 500 thì hiển thị "Lỗi server"
+    let errorMessage
+    if (err?.response?.status === 500) {
+      errorMessage = 'Lỗi server'
+    } else {
+      // Giữ nguyên logic cũ nếu không phải 500
+      errorMessage = err?.response?.data?.msg || err?.message || 'Có lỗi xảy ra khi nhận diện ảnh'
+    }
     error.value = errorMessage
     toast.add({
       severity: 'error',
